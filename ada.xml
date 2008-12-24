@@ -1,0 +1,712 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE article PUBLIC "-//OASIS//DTD DocBook XML V4.5//EN"
+"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd">
+<?xml-stylesheet type="text/xsl"
+   href="/usr/share/xml/docbook/stylesheet/nwalsh/xhtml/docbook.xsl"?>
+<!--
+[
+<!ENTITY % entities SYSTEM "../Documentation/DocBook/standard-entities.dtd">
+%entities;
+] -->
+
+
+<article>
+  <articleinfo>
+    <title>Solid Development Coding Standards - Ada</title>
+
+    <authorgroup>
+      <author>
+        <firstname>Jeffrey</firstname>
+
+        <surname>Carter</surname>
+
+        <othername role="mi">R</othername>
+
+        <affiliation>
+           Singo Solution
+        </affiliation>
+      </author>
+      <author>
+        <firstname>Jesse</firstname>
+        <surname>Lang</surname>
+
+        <othername role="mi">D</othername>
+
+        <affiliation>Singo Solution</affiliation>
+      </author>
+    </authorgroup>
+
+    <date>2008 December</date>
+
+    <pubdate>2008</pubdate>
+
+    <revhistory>
+      <revision>
+        <revnumber>1.0</revnumber>
+
+        <date>24 Dec 2008</date>
+
+        <revremark>First version derived from ACS from Singo.</revremark>
+      </revision>
+    </revhistory>
+  </articleinfo>
+
+  <section>
+    <title>Introduction</title>
+
+    <para>
+      This document has many uses.  To some, it may be a reference guide for readable, maintainable code.
+      To others, it will be a starting point to develop your own coding standard.
+      To others still, it will be an object of mockery.
+      The basic idea here is, "Love it, hate it, don't ignore it!"
+    </para>
+    <para>
+      If the style of your code
+      is significantly different from these examples, your code does not conform to
+      these standards, even if it doesn't explicitly violate any individual
+      standards.
+    </para>
+  </section>
+
+  <section>
+    <title>Editor Settings</title>
+
+    <section>
+      <title>Spacing and Indentation</title>
+
+      <para>There must be no tabs or other control characters in source code
+      except line terminators. Indent 3 spaces per indentation level.</para>
+
+      <example id="example.10">
+        <title id="example.10.title">Indentation using 3 spaces: good spacing and alignment</title>
+
+        <programlisting>
+<![CDATA[
+procedure Forward (List : in out List_Handle; Position : in Natural := 0) is
+begin -- Forward
+   if Position = 0 then
+      List.Current := List.Tail;
+   else
+      for N in 1 .. Position loop
+         Move (List => List, Count => 1);
+
+         if List.Current = null then
+            List.Current := List.Tail;
+
+            exit;
+         end if;
+      end loop;
+   end if;
+end Forward;
+
+procedure Interlace (List           : in out List_Handle;
+                     Start_Position : in     Positive;
+                     Stop_Position  : in     Positive;
+                     Spacing        : in     Positive)
+is
+...
+]]>
+        </programlisting>
+      </example>
+    </section>
+  </section>
+
+  <section>
+    <title>Code Layout</title>
+
+    <section>
+      <title>Line Length</title>
+
+      <para>Lines may be up to 130 characters in length. Statements that can fit
+      on one line should usually be on one line.</para>
+
+      <example id="example.20">
+        <title>Line breaks and long statements</title>
+
+        <programlisting>
+<![CDATA[
+Account_Balance := (Fixed_Asset_Balance + Current_Asset_Balance + Stock_Balance + Account_Receivable_Balance) -
+                   (Total_Liability + Total_Expenses + Future_Dated_Transaction);
+
+Do_Multiple_Processing (Total_Asset_Balance_Before_Tax => Ledger_1.Total_Asset_Balance_Before_Tax,
+                        Tax_Rate                       => 0.35,
+                        Total_Asset_Balance_After_Tax  => Ledger_1.Total_Asset_Balance_After_Tax);
+]]>
+        </programlisting>
+      </example>
+    </section>
+
+    <section>
+      <title>Spacing</title>
+
+      <para>There must be at least one space on both sides of '<code>:</code>',
+      "<code>:=</code>", "<code>=&gt;</code>", and all binary operators. While
+      multiple space is permitted, it is generally discouraged except to conform
+      to other standards, such as lining things up. There must be no space
+      between unary operators that are symbols ("<code>+</code>",
+      "<code>-</code>") and their operands. Put a space between multiple
+      parentheses of the same type. For example, "<code>( (X + Y) *
+      Z)</code>".</para>
+    </section>
+
+    <section>
+      <title>Position and Alignment</title>
+
+      <para>The "<code>is</code>" of a procedure body should be on the same line
+      as "<code>procedure</code>" if that's possible; when it can't be on the
+      same line, it must be on a line by itself, lined up with
+      "<code>procedure</code>" as in the example "<link linkend="example.10"
+      endterm="example.10.title"/>."</para>
+
+      <para>The "<code>return T;</code>" of a function declaration should be on
+      the same line as "<code>function</code>" if that's possible; when it can't
+      be on the same line, it must be on a line by itself, lined up with
+      "<code>function</code>".</para>
+
+      <para>The "<code>return T is</code>" of a function body should be on the
+      same line as "<code>function</code>" if that's possible; when it can't be
+      on the same line, it must be on a line by itself, lined up with
+      "<code>function</code>".</para>
+
+      <example id="example.30">
+        <title>Alignment of <code>return</code> with
+        <code>function</code></title>
+
+        <programlisting>
+<![CDATA[
+function Recurse_Available (Total  : Integer;
+                            I      : Integer;
+                            Conf   : Integer_Array;
+                            Rank   : Integer_Array;
+                            Lambda : Float_Array;
+                            Mu     : Float_Array;
+                            Bad    : Integer)
+return Float is
+...
+]]>
+        </programlisting>
+      </example>
+
+      <para>The "<code>when B is</code>" of an entry body should be on the same
+      line as "<code>entry</code>" if that's possible; when it can't be on the
+      same line, it must be on a line by itself, lined up with
+      "<code>entry</code>".</para>
+
+      <para>The "<code>then</code>" of an <code>if</code> (or
+      <code>elsif</code>) should be on the same line as "<code>if</code>" (or
+      "<code>elsif</code>") if that's possible; when it can't be on the same
+      line, it must be on a line by itself, lined up with "<code>if</code>" (or
+      "<code>elsif</code>").</para>
+
+      <example id="example.40">
+        <title>Position and alignment of <code>if</code> ...
+        <code>then</code></title>
+
+        <programlisting>
+<![CDATA[
+-- Short conditions:
+if Stock_Balance > 0 then
+   Stock_Available := True;
+elsif Stock_Balance < 0 then
+   Do_Critical_Reorder;
+else
+   Replenish_Stock;
+end if;
+
+...
+
+-- Long conditions:
+if Stock_Balance + Account_Receivable_Balance >
+   Fixed_Asset_Balance + Current_Asset_Balance - Cash_In_Hand
+then
+   Do_Something;
+elsif Current_Asset_Balance + Fixed_Asset_Balance + Total_Income <
+      Total_Liability + Total_Expenses
+then
+   Do_Something_Nice;
+else
+   null;
+end if;
+]]>
+        </programlisting>
+      </example>
+
+      <para>The "<code>is record</code>" of a record type declaration should be
+      on the same line as "<code>type</code>" if that's possible; when it can't
+      be on the same line, it must be on a line by itself, lined up with
+      "<code>type</code>".</para>
+
+      <example id="example.50">
+        <title>Examples of formatting subprograms</title>
+
+        <programlisting>
+<![CDATA[
+-- In order of preference:
+-- Everything can fit in 130 characters:
+procedure P (P1 : in T1; P2 : in T2);
+function F (P1 : T1; P2 : T2) return T9;
+...
+procedure P (P1 : in T1; P2 : in T2) is
+function F (P1 : T1; P2 : T2) return T9 is
+
+-- Functions only: name and parameter list fit,
+-- but not "return Typename;":
+function F (P1 : T1; P2 : T2; P3 : T3; P4 : T4)
+return T9;
+...
+function F (P1 : T1; P2 : T2; P3 : T3; P4 : T4)
+return T9 is
+
+-- Name and parameter list won't fit, but indented
+-- parameter list alone will fit:
+procedure P
+   (P1 : in T1; P2 : in T2; P3 : in T3; P4 : in T4; P5 : in T5);
+function F
+   (P1 : T1; P2 : T2; P3 : T3; P4 : T4; P5 : in T5)
+return T9;
+...
+procedure P
+   (P1 : in T1; P2 : in T2; P3 : in T3; P4 : in T4; P5 : in T5)
+is
+function F
+   (P1 : T1; P2 : T2; P3 : T3; P4 : T4; P5 : in T5)
+return T9 is
+
+-- Indented parameter list won't fit:
+procedure P (P1 : in T1;
+             P2 : in T2;
+             P3 : in T3;
+             P4 : in T4;
+             P5 : in T5;
+             P6 : in T6);
+function F (P1 : T1;
+            P2 : T2;
+            P3 : T3;
+            P4 : T4;
+            P5 : T5;
+            P6 : T6)
+return T9;
+...
+procedure P (P1 : in T1;
+             P2 : in T2;
+             P3 : in T3;
+             P4 : in T4;
+             P5 : in T5;
+             P6 : in T6)
+is
+function F (P1 : T1;
+            P2 : T2;
+            P3 : T3;
+            P4 : T4;
+            P5 : T5;
+            P6 : T6)
+return T9 is
+]]>
+        </programlisting>
+      </example>
+    </section>
+
+    <section>
+      <title>Parentheses</title>
+
+      <para>Parentheses must be kept with what they enclose. Do not follow left
+      parentheses with comments or line ends. Do not precede right parentheses
+      with line ends.</para>
+    </section>
+
+    <section>
+      <title>Blank Lines</title>
+
+      <para>There must be one blank line between context clauses and the rest of
+      the compilation unit.</para>
+
+      <para>There must be one blank line between compound statements and
+      surrounding statements at the same indentation level.</para>
+
+      <para>There must be one blank line between transfer of control statements
+      (<code>return</code>, <code>exit</code>, <code>goto</code>,
+      <code>raise</code>) and surrounding statements at the same indentation
+      level.</para>
+
+      <para>There must be one blank line between delay statements and
+      surrounding statements at the same indentation level.</para>
+
+      <para>Do not use more than 2 multiple consecutive blank lines. Use
+      multiple blank lines only to separate logical blocks of code that would
+      not be clearly separated by a single blank line. Comments at the beginning
+      of such logical blocks are recommended.</para>
+
+      <para>Do not put blank lines between statements at different indentation
+      levels.</para>
+    </section>
+
+    <section>
+      <title>Operators and Indentation</title>
+
+      <para>Line up '<code>:</code>', "<code>:=</code>", "<code>=&gt;</code>",
+      "<code>in</code>", "<code>out</code>", etc. when appropriate. (please
+      define appropriate use)</para>
+
+      <para>Indent each "<code>when</code>" from its corresponding
+      "<code>exception</code>" or "<code>case</code>".</para>
+    </section>
+  </section>
+
+  <section>
+    <title>Naming Convention</title>
+
+    <para>Reserved words must be all lower-case except when used as an
+    attribute, in which case they must have an Initial Capital Letter
+    (<code>George'Access</code>; <code>Martha'Range</code>).</para>
+
+    <section id="section.4.1" xreflabel="Section 4.1 Identifier Names">
+      <title>Identifier Names</title>
+
+      <para>Do not use CamelCase or Hungarian Notation (<code>szFoo</code>). Use
+      underscores to separate words. Use mixed case for all identifiers, a
+      capital letter beginning every word separated by underscores. Consecutive
+      capital letters in identifiers may only be used to represent acronyms from
+      the Official List of Acceptable Acronyms (OLAA). An acronym must be a
+      complete word of an identifier. "<code>Text_IO</code>" is acceptable,
+      whereas "<code>BString</code>" is not.</para>
+
+      <para>Attributes must follow the formatting rules for identifiers
+      above.</para>
+
+      <example id="example.60">
+        <title>Identifier names: position and alignment</title>
+
+        <programlisting>
+<![CDATA[
+type Speed_Value is range 0 .. 300;
+
+Speed          : Speed_Value;
+Relative_Speed : Speed_Value;
+]]>
+        </programlisting>
+      </example>
+    </section>
+
+    <!-- &olaa; -->
+
+    <section>
+      <title>Loop Names</title>
+
+      <para>Loops must be named when they are nested and when it improves
+      readability. Use loop names on <code>exit</code> statements when exiting a
+      named loop.</para>
+    </section>
+
+    <section>
+      <title>Block Names</title>
+
+      <para>Block statements must be named when they are nested and when it
+      improves readability.</para>
+    </section>
+
+    <section>
+      <title>Repeating Names</title>
+
+      <para>Repeat operation and block names as comments after "<code>begin</code>",
+      "<code>exception</code>", "<code>private</code>", "<code>generic</code>"
+      and "<code>end</code>".</para>
+    </section>
+
+    <section>
+      <title>Useful Type-Name Suffixes</title>
+
+      <para><itemizedlist>
+          <listitem>
+
+
+            <code>_Handle</code>
+
+             for private types
+          </listitem>
+
+          <listitem>
+
+
+            <code>_Handle</code>
+
+             for access types
+          </listitem>
+
+          <listitem>
+
+
+            <code>_Info</code>
+
+             ,
+
+            <code>_Group</code>
+
+             for record types
+          </listitem>
+
+          <listitem>
+
+
+            <code>_ID</code>
+
+             ,
+
+            <code>_Name</code>
+
+             for enumeration types
+          </listitem>
+
+          <listitem>
+
+
+            <code>_ID</code>
+
+             for integer types used as IDs
+          </listitem>
+
+          <listitem>
+
+
+            <code>_Value</code>
+
+             ,
+
+            <code>_Range</code>
+
+             for numeric types
+          </listitem>
+
+          <listitem>
+
+
+            <code>_List</code>
+
+             ,
+
+            <code>_Set</code>
+
+             for array types
+          </listitem>
+        </itemizedlist></para>
+
+      <para>Do not use prefixes like "<code>The_</code>", "<code>An_</code>" and
+      "<code>A_</code>" when naming types and objects.</para>
+
+      <para>Save the best name ("<code>List</code>", "<code>Set</code>",
+      "<code>Person</code>", etc.) for parameters. Use suffixes for type
+      names.</para>
+
+      <para>If the meaningful name differs from these guidelines, use the
+      meaningful name. For example, a private type used as an ID would be better
+      named <code>_ID</code> than <code>_Handle</code>.</para>
+    </section>
+  </section>
+
+  <section id="section.5" xreflabel="Section 5 Subprograms">
+    <title>Subprograms</title>
+
+    <para>Use named notation for procedure and entry calls, except where
+    parameter names are meaningless and named notation would detract from
+    readability (<code>Ada.Unchecked_Deallocation</code> for instance).</para>
+
+    <para>Use positional notation for the first parameter of function calls.
+    Remaining parameters may use positional or named notation, whichever makes
+    the code clearer. "<code>Is_Member (Item, Set)</code>" is clear;
+    "<code>Image (X, 7)</code>" may not be, since 7 might be the
+    <code>Width</code> or the <code>Base</code> parameter. "<code>Image (X,
+    Width =&gt; 7)</code>" is better.</para>
+
+    <section>
+      <title>Parameter Modes</title>
+
+      <para>Do not specify parameter modes for functions, but always specify
+      them for procedures and entries. Align "<code>:</code>" and parameter
+      modes when parameters are not on the same line.</para>
+
+      <example id="example.70">
+        <title>Alignment and parameter modes</title>
+
+        <programlisting>
+<![CDATA[
+procedure Dynamic_Sensor_Fusion (N             : in     Integer;
+                                 F             : in     Integer;
+                                 Value         : in out Object;
+                                 Bounds        : in out Reading;
+                                 Data          : in out Reading_List;
+                                 Print_Details : in     Integer;
+                                 Result        :    out Result_Value)
+is
+   Cardinality : Natural := 0;
+   Factor      : Integer := 0;
+   ...
+]]>
+        </programlisting>
+      </example>
+    </section>
+  </section>
+
+  <section>
+    <title><code>Use</code> Clauses</title>
+
+    <para>Avoid all unnecessary "<code><code>use</code></code>" of packages.
+    There must be no "<code>use</code>" clauses in package specifications. In
+    bodies, "<code><code>use type</code></code>" is acceptable. Acceptable
+    "<code><code>use</code></code>" clauses are limited in scope (to small
+    subprograms, entry bodies, or block statements), apply to 3 or more
+    references to the package, and leave it clear where the abbreviated names
+    are declared.</para>
+
+    <example id="example.80">
+      <title><code>use</code> clause in limited scope</title>
+
+      <programlisting>
+<![CDATA[
+declare
+   use Stack;
+begin
+   ...
+   Push (Item => M);
+   ...
+   N := Pop;
+   ...
+exception
+   when Error =>
+      Put (Item =&gt; "Stack manipulation error.");
+   when others =>
+      Put (Item =&gt; "Something else went wrong with Stack.");
+end;
+]]>
+      </programlisting>
+    </example>
+
+    <para>Do not "<code>with</code>" or "<code><code>use</code></code>" parent
+    packages. Their specifications are available without a context clause and
+    directly visible without a <code>use</code> clause.</para>
+  </section>
+
+  <section>
+    <title>Transfer-of-Control Statements</title>
+
+    <section>
+      <title>Loop Control</title>
+
+      <para>Use "<code>exit</code>" to control loops rather than
+      "<code>while</code>".</para>
+    </section>
+
+    <section>
+      <title>Goto Statements</title>
+
+      <para>Use "<code>goto</code>" only for mechanical implementation of state
+      diagrams.</para>
+    </section>
+  </section>
+
+  <section>
+    <title>Comments</title>
+
+    <para>Comment package specifications such that a reader need not see the
+    body to understand how to use the package. Comment subprograms and entries
+    after the subprogram or entry declaration. Internal subprograms and entries
+    that need comments (which includes most subprograms and entries) must have a
+    separate declaration for the comments to follow. (An internal subprogram is
+    a subprogram nested in another body. The separate declaration for the
+    subprogram appears in the same body.)</para>
+
+    <para>Put a space after the "<code>--</code>" of a comment. Multiple spaces
+    may be used to line things up in consecutive comments.</para>
+
+    <para>Comments must be correct English: begin with a capital letter and end
+    with a period.</para>
+
+    <para>Comments must add value. Comments that repeat things that are obvious
+    from the code do not add value. Comments should add information that is not
+    apparent from the code. Things are obvious when they are obvious to the
+    program manager.</para>
+
+    <example id="example.90">
+      <title>Example of a comment that does not add value</title>
+
+      <programlisting>X := X + 1; -- Increment X.</programlisting>
+    </example>
+
+    <example id="example.100">
+      <title>Example of a comment that does add value</title>
+
+      <programlisting>
+<![CDATA[
+-- If Item.Group is outside the desired range of groups,
+-- all following items' groups will also be outside
+-- the range, so we can terminate the iteration now.
+if Item.Group > Last_Group then
+   Continue := False;
+
+   return;
+end if;
+]]>
+      </programlisting>
+    </example>
+  </section>
+
+  <section>
+    <title>Miscellaneous</title>
+
+    <para>Name packages to be descriptive and show logical groupings of
+    operations; avoid ambiguous names such as "utilities", "helpers", and the
+    like. If operations are particularly long, consider making them
+    separate.</para>
+
+    <para>When using tagged types and inheritance, use "<code>[not]
+    overriding</code>" to explicitly tell the compiler whether an operation is
+    overridden or not.</para>
+
+    <para>Do not use <code>'Range</code> unnecessarily:</para>
+
+    <para><code>if Something in Number then</code></para>
+
+    <para>as opposed to</para>
+
+    <para><code>if Something in Number'Range then</code>.</para>
+
+    <para>There must be no variables in package specifications.</para>
+
+    <para>Declarations should be grouped to show logical relationships. Within
+    such logical groups, group similar kinds of declarations: named numbers,
+    constants, types and subtypes, variables. Separate different kinds of
+    declarations by a blank line.</para>
+
+    <para>There must be only one name per declaration and one parameter name per
+    parameter declaration. There must be only one unit name per
+    "<code>with</code>" statement, one unit name per "<code>use</code>"
+    statement, and one subtype name per "<code>use type</code>"
+    statement.</para>
+
+    <para>Everything in a package specification must be needed by the
+    specification, must be needed by the client to use the package, or must be
+    in the private part and needed by multiple children of the package. Use
+    "<code>private with</code>" for units that are only needed in the private
+    part.</para>
+
+    <para>There must be no unit named in a context clause that is not referenced
+    in the compilation unit where the context clause appears.</para>
+  </section>
+
+  <section>
+    <title>Auxiliary Standards</title>
+
+    <section>
+      <title>Interface to Other Programming Languages</title>
+
+      <section>
+        <title><code>pragma Import</code></title>
+
+        <para>Other standards not withstanding, when importing subprograms from
+        C and using the identifiers in <code>Interfaces.C</code>,
+        <code>Interfaces.C.Strings</code>, and
+        <code>Interfaces.C.Pointers</code>, you may use the capitalization of
+        those identifiers that appears in the Ada Reference Manual sections B.3,
+        B.3.1, and B.3.2.</para>
+      </section>
+    </section>
+  </section>
+</article>
